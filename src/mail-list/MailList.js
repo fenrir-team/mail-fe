@@ -7,10 +7,13 @@ class MailList extends Component {
         super(props);
 
         this.state = {
-            password: ''
+            password: '',
+            mails: []
         };
 
         this.handleChange = this.handleChange.bind(this);
+        this.login = this.login.bind(this);
+        this.getMails = this.getMails.bind(this);
     }
 
     login() {
@@ -27,6 +30,9 @@ class MailList extends Component {
 
     getMails(){
         axios.get('http://localhost:3000').then((mails)=> {
+            this.setState({
+                mails: mails.data
+            });
             console.log(mails);
         }).catch(err=> {
             console.error(err);
@@ -38,17 +44,21 @@ class MailList extends Component {
     }
 
     render() {
+        //const mails = this.state.mails ? `De: ${this.state.mails.from.text} Para: ${this.state.mails.to.text} ${this.state.mails.text}` : 'No hay correos';
+        const mails = this.state.mails.map((mail)=> {
+            return (
+                <a href="#" className="list-group-item list-group-item-action">{mail.text}</a>
+            );
+        });
+
         return (
             <div className="list-group">
                 <input type="text" value={this.state.password} onChange={this.handleChange}/>
 
-                <button onClick={()=> this.login}>Login</button>
+                <button onClick={this.login}>Login</button>
                 <button onClick={this.getMails}>Get Mails</button>
 
-                <a href="#" className="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
-                <a href="#" className="list-group-item list-group-item-action">Morbi leo risus</a>
-                <a href="#" className="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-                <a href="#" className="list-group-item list-group-item-action disabled">Vestibulum at eros</a>
+                {mails}
             </div>
         );
     }
